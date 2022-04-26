@@ -2,7 +2,7 @@
 
 namespace Warriors
 {
-    public class Samurai : Character, IWarrior
+    public class Samurai : Warrior, IWarrior
     {
         public override Effectiveness Skill => Effectiveness.Extreme;
 

@@ -15,7 +15,7 @@ namespace DependencyInjection
 
         public App(
             IFeedbackService feedbackService,
-            ICharacterFactory characterFactory,
+            IWarriorFactory characterFactory,
             IWeaponFactory weaponFactory)
         {
             _feedbackService = feedbackService ??

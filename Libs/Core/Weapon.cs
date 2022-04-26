@@ -4,7 +4,7 @@
     {
         public abstract Effectiveness Deadliness { get; }
 
-        public void Hit(ICharacter target)
+        public void Hit(IWarrior target)
         {
             target?.Struck(this);
         }

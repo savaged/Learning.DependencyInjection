@@ -22,7 +22,7 @@ namespace DependencyInjection
             var builder = new ContainerBuilder();
             builder.RegisterType<FeedbackService>().As<IFeedbackService>();
             builder.RegisterType<WeaponFactory>().As<IWeaponFactory>();
-            builder.RegisterType<CharacterFactory>().As<ICharacterFactory>();
+            builder.RegisterType<WarriorFactory>().As<IWarriorFactory>();
             builder.RegisterType<App>().As<IApp>();
             return builder.Build();
         }
