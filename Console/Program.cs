@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Core;
 using System;
 using Warriors;
 using Weapons;
@@ -22,6 +23,7 @@ namespace DependencyInjection
         {
             var builder = new ContainerBuilder();
             builder.RegisterType<FeedbackService>().As<IFeedbackService>();
+            builder.RegisterType<CharacterFactory>().As<ICharacterFactory>();
             builder.RegisterType<Shuriken>().As<IShuriken>();
             builder.RegisterType<Katana>().As<IKatana>();
             builder.RegisterType<Bandit>().As<IBandit>();
