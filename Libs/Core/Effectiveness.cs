@@ -5,7 +5,7 @@
         None,
         Slight,
         Very,
-        Extreme
+        Extreme = 7
     }
 
 }

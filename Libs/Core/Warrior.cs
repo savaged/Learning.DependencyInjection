@@ -6,21 +6,25 @@ namespace Core
     {
         public Warrior()
         {
-            LifeCount = (uint)Appearance.Strong;
+            LifeCount = (int)Appearance.Strong;
             Weapon = EmptyWeapon.Default;
         }
 
         public abstract Effectiveness Skill { get; }
 
+        public Appearance Appearance => GetAppearance(LifeCount);
+
+        public bool IsDead => Appearance == Appearance.Dead;
+
         public IWeapon Weapon { get; set; }
 
-        public uint LifeCount { get; private set; }
+        public int LifeCount { get; protected set; }
 
         public IWarrior Opponent { get; private set; }
 
         public void Attack(IWarrior opponent)
         {
-            if (opponent == null) return;
+            if (opponent == null || IsDead) return;
             Opponent = opponent;
             Weapon.Hit(Opponent);
         }
@@ -31,9 +35,9 @@ namespace Core
 
             LifeCount -= Damage(with);
 
-            Injury?.Invoke(this, new InjuryEventArgs(GetAppearance(LifeCount)));
+            Injury?.Invoke(this, new InjuryEventArgs(Appearance));
 
-            if (LifeCount <= (uint)Appearance.Dead)
+            if (LifeCount <= (int)Appearance.Dead)
             {
                 Dead?.Invoke(this, EventArgs.Empty);
             }
@@ -48,27 +52,27 @@ namespace Core
             return GetType().Name;
         }
 
-        private static Appearance GetAppearance(uint lifeCount)
+        private static Appearance GetAppearance(int lifeCount)
         {
             Appearance value = Appearance.Strong;
             switch (lifeCount)
             {
-                case uint n when n <= (uint)Appearance.Dead:
+                case int n when n <= (int)Appearance.Dead:
                     value = Appearance.Dead;
                     break;
-                case uint n when n <= (uint)Appearance.Expiring:
+                case int n when n <= (int)Appearance.Expiring:
                     value = Appearance.Expiring;
                     break;
-                case uint n when n <= (uint)Appearance.Weak:
+                case int n when n <= (int)Appearance.Weak:
                     value = Appearance.Weak;
                     break;
             }
             return value;
         }
 
-        private static uint Damage(IWeapon with)
+        private static int Damage(IWeapon with)
         {
-            return (uint)(with?.Deadliness ?? Effectiveness.None);
+            return (int)(with?.Deadliness ?? Effectiveness.None);
         }
 
     }

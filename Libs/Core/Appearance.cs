@@ -5,7 +5,8 @@
         Dead,
         Expiring,
         Weak,
-        Strong
+        Strong,
+        VeryStrong
     }
 
 }

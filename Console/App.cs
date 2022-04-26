@@ -1,5 +1,7 @@
 ﻿using Core;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Warriors;
 using Weapons;
@@ -9,59 +11,74 @@ namespace DependencyInjection
     class App : IApp
     {
         private readonly IFeedbackService _feedbackService;
-        private readonly IWarrior _bandit;
+        private readonly IList<IWarrior> _bandits;
         private readonly IWarrior _samurai;
-        private bool _warriorDeath;
+        private bool _battleOver;
 
         public App(
             IFeedbackService feedbackService,
-            IWarriorFactory characterFactory,
+            IWarriorFactory warriorFactory,
             IWeaponFactory weaponFactory)
         {
             _feedbackService = feedbackService ??
                 throw new ArgumentNullException(nameof(feedbackService));
 
-            if (characterFactory == null)
-                throw new ArgumentNullException(nameof(characterFactory));
+            if (warriorFactory == null)
+                throw new ArgumentNullException(nameof(warriorFactory));
             if (weaponFactory == null)
                 throw new ArgumentNullException(nameof(weaponFactory));
 
-            _bandit = characterFactory.Create<Bandit>() ??
-                throw new InvalidOperationException($"{nameof(Bandit)} not found!");
-            _samurai = characterFactory.Create<Samurai>() ??
+            _bandits = new List<IWarrior>();
+            _bandits?.Add(warriorFactory?.Create<Bandit>());
+            _bandits?.Add(warriorFactory?.Create<Bandit>());
+            if (_bandits.Count == 0)
+                throw new InvalidOperationException("No bandits!");
+
+            _samurai = warriorFactory.Create<Samurai>() ??
                 throw new InvalidOperationException($"{nameof(Samurai)} not found!");
 
-            _bandit.Injury += OnCharacterInjury;
+            foreach (var bandit in _bandits)
+            {
+                bandit.Injury += OnCharacterInjury;
+                bandit.Dead += OnCharacterDead;
+            }
             _samurai.Injury += OnCharacterInjury;
-
-            _bandit.Dead += OnCharacterDead;
             _samurai.Dead += OnCharacterDead;
 
-            _bandit.Weapon = weaponFactory.Create<Yari>() ??
+            _bandits.First().Weapon = weaponFactory.Create<Shuriken>() ??
+                throw new InvalidOperationException($"{nameof(Shuriken)} not found!");
+            _bandits.Last().Weapon = weaponFactory.Create<Yari>() ??
                 throw new InvalidOperationException($"{nameof(Yari)} not found!");
+
             _samurai.Weapon = weaponFactory.Create<Katana>() ??
                 throw new InvalidOperationException($"{nameof(Katana)} not found!");
         }
 
         public void Run()
         {
-            while (!_warriorDeath)
+            while (!_battleOver)
             {
                 Exchange();
             }
+            _feedbackService.Feedback("battle over");
         }
 
         private void Exchange()
         {
-            Attack(_bandit, _samurai);
+            Attack(_bandits.FirstOrDefault(), _samurai);
             Thread.Sleep(1000);
-            Attack(_samurai, _bandit);
+            Attack(_samurai, _bandits.FirstOrDefault());
+            Thread.Sleep(1000);
+            Attack(_bandits.LastOrDefault(), _samurai);
+            Thread.Sleep(1000);
+            Attack(_samurai, _bandits.LastOrDefault());
         }
 
         private void Attack(IWarrior attacker, IWarrior target)
         {
+            if (attacker?.IsDead == true) return;
             _feedbackService.Feedback($"{attacker} attacks {target}");
-            attacker.Attack(target);
+            attacker?.Attack(target);
         }
 
         private void OnCharacterInjury(object sender, InjuryEventArgs e)
@@ -71,8 +88,8 @@ namespace DependencyInjection
 
         private void OnCharacterDead(object sender, EventArgs e)
         {
-            _warriorDeath = true;
             _feedbackService.Feedback($"{sender} is dead");
+            _battleOver = _bandits.All(b => b.IsDead) || sender is Samurai;
         }
 
     }
