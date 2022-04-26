@@ -4,16 +4,15 @@ namespace Core
 {
     public abstract class Character : ICharacter
     {
-        public Character(
-            Effectiveness skill,
-            IWeapon weapon)
+        public Character()
         {
             LifeCount = (uint)Appearance.Strong;
-            Skill = skill;
-            Weapon = weapon ?? EmptyWeapon.Default;
+            Weapon = EmptyWeapon.Default;
         }
 
-        public Effectiveness Skill { get; }
+        public abstract Effectiveness Skill { get; }
+
+        public IWeapon Weapon { get; set; }
 
         public uint LifeCount { get; private set; }
 
@@ -43,8 +42,6 @@ namespace Core
         public event EventHandler<InjuryEventArgs> Injury;
 
         public event EventHandler Dead;
-
-        protected IWeapon Weapon { get; }
 
         public override string ToString()
         {

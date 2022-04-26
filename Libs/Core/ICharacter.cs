@@ -5,7 +5,7 @@ namespace Core
     public interface ICharacter
     {
         Effectiveness Skill { get; }
-        uint LifeCount { get; }
+        IWeapon Weapon { get; set; }
         ICharacter Opponent { get; }
         void Struck(IWeapon with);
         event EventHandler<InjuryEventArgs> Injury;

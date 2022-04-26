@@ -2,9 +2,9 @@
 
 namespace Core
 {
-    public class CharacterFactory : ICharacterFactory
+    public class WeaponFactory : IWeaponFactory
     {
-        public T Create<T>() where T : class, ICharacter, new()
+        public T Create<T>() where T : class, IWeapon, new()
         {
             return Activator.CreateInstance<T>();
         }

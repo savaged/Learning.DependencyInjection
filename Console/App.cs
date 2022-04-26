@@ -2,6 +2,7 @@
 using System;
 using System.Threading;
 using Warriors;
+using Weapons;
 
 namespace DependencyInjection
 {
@@ -14,22 +15,32 @@ namespace DependencyInjection
 
         public App(
             IFeedbackService feedbackService,
-            IBandit bandit,
-            ISamurai samurai)
+            ICharacterFactory characterFactory,
+            IWeaponFactory weaponFactory)
         {
             _feedbackService = feedbackService ??
                 throw new ArgumentNullException(nameof(feedbackService));
 
-            _bandit = bandit ??
-                throw new ArgumentNullException(nameof(bandit));
-            _samurai = samurai ??
-                throw new ArgumentNullException(nameof(samurai));
+            if (characterFactory == null)
+                throw new ArgumentNullException(nameof(characterFactory));
+            if (weaponFactory == null)
+                throw new ArgumentNullException(nameof(weaponFactory));
+
+            _bandit = characterFactory.Create<Bandit>() ??
+                throw new InvalidOperationException($"{nameof(Bandit)} not found!");
+            _samurai = characterFactory.Create<Samurai>() ??
+                throw new InvalidOperationException($"{nameof(Samurai)} not found!");
 
             _bandit.Injury += OnCharacterInjury;
             _samurai.Injury += OnCharacterInjury;
 
             _bandit.Dead += OnCharacterDead;
             _samurai.Dead += OnCharacterDead;
+
+            _bandit.Weapon = weaponFactory.Create<Yari>() ??
+                throw new InvalidOperationException($"{nameof(Yari)} not found!");
+            _samurai.Weapon = weaponFactory.Create<Katana>() ??
+                throw new InvalidOperationException($"{nameof(Katana)} not found!");
         }
 
         public void Run()

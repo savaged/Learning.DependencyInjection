@@ -1,13 +1,10 @@
 ﻿using Core;
-using Weapons;
 
 namespace Warriors
 {
-    public class Samurai : Character, ISamurai
+    public class Samurai : Character, IWarrior
     {
-        public Samurai(IKatana weapon)
-            : base(Effectiveness.Very, weapon)
-        { }
+        public override Effectiveness Skill => Effectiveness.Extreme;
 
     }
 }

@@ -1,13 +1,10 @@
 ﻿using Core;
-using Weapons;
 
 namespace Warriors
 {
-    public class Bandit : Character, IBandit
+    public class Bandit : Character, IWarrior
     {
-        public Bandit(IShuriken weapon)
-            : base(Effectiveness.Very, weapon)
-        { }
+        public override Effectiveness Skill => Effectiveness.Very;
 
     }
 }
